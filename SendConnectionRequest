@@ -1,0 +1,72 @@
+// Select all elements with the class 'search-results-container'
+const getSecondaryButtons = () => {
+    const searchResultsContainers = document.querySelectorAll('.search-results-container');
+  
+    // Initialize an empty array to store the matching elements
+    const secondaryButtons = [];
+  
+    // Iterate through each 'search-results-container'
+    searchResultsContainers.forEach(container => {
+      // Find elements with the class 'artdeco-button--secondary' inside this container
+      const buttons = container.querySelectorAll('.artdeco-button--secondary');
+  
+      // Filter buttons to only include those with a child span with class 'artdeco-button__text' and text content 'Connect'
+      buttons.forEach(button => {
+        const span = button.querySelector('span.artdeco-button__text');
+        if (span && span.textContent.trim() === 'Connect') {
+          secondaryButtons.push(button);
+        }
+      });
+    });
+  
+    return secondaryButtons;
+  };
+  
+  // Function to click buttons and handle modal actions
+  const processButtons = async () => {
+    let secondaryButtons = getSecondaryButtons();
+  
+    while (secondaryButtons.length > 0) {
+      // Get the first button in the array
+      const button = secondaryButtons[0];
+  
+      // Click the button
+      button.click();
+  
+      // Wait for 1 second for the popup to appear
+      await new Promise(resolve => setTimeout(resolve, 1500));
+  
+      // Find the primary button in the modal
+      const modalPrimaryButton = document.querySelector('.artdeco-modal__actionbar .artdeco-button--primary');
+  
+      // Click the primary button if it exists
+      if (modalPrimaryButton) {
+        modalPrimaryButton.click();
+      }
+  
+      // Remove the processed button from the array
+      secondaryButtons.shift();
+  
+      // Wait for 1 second before processing the next button
+      await new Promise(resolve => setTimeout(resolve, 1500));
+    }
+  
+    console.log('All buttons processed.');
+  
+    // Click the next pagination button
+    const nextButton = document.querySelector('.artdeco-pagination__button--next');
+    if (nextButton) {
+      nextButton.click();
+  
+      // Wait for 3 seconds for the new page to load
+      await new Promise(resolve => setTimeout(resolve, 5000));
+  
+      // Restart the script
+      await processButtons();
+    } else {
+      console.log('No more pages to process.');
+    }
+  };
+  
+  // Start processing the buttons
+  processButtons();
